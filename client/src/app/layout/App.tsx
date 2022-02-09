@@ -3,12 +3,15 @@ import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { useState } from "react";
 import { Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import AboutPage from "../../features/about/AboutPage";
 import Catalog from "../../features/catalog/Catalog";
 import ProductDetails from "../../features/catalog/ProductDetails";
 import ContactPage from "../../features/contact/ContactPage";
 import HomePage from "../../features/home/HomePage";
 import Header from "./Header";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -29,6 +32,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       <CssBaseline />
       <Header switchTheme={switchTheme} />
       <Container>
