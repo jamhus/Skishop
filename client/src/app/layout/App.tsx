@@ -33,7 +33,7 @@ const App = () => {
       <Header switchTheme={switchTheme} />
       <Container>
         <Route path='/' exact component={HomePage}/>
-        <Route path='/catalog' component={Catalog}/>
+        <Route exact path='/catalog' component={Catalog}/>
         <Route path='/catalog/:id' component={ProductDetails}/>
         <Route path='/about' component={AboutPage}/>
         <Route path='/contact' component={ContactPage}/>
