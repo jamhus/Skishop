@@ -52,7 +52,7 @@ namespace API
             app.UseRouting();
             app.UseCors(options =>
             {
-                options.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+                options.AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithOrigins("http://localhost:3000");
             });
 
             app.UseAuthorization();
