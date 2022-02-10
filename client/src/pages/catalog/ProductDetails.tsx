@@ -2,6 +2,7 @@ import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, T
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import agent from "../../app/api/agent";
+import Loading from "../../app/components/Loading";
 import { Product } from "../../app/interfaces/product";
 
 const ProductDetails = () => {
@@ -14,7 +15,7 @@ const ProductDetails = () => {
     .finally(() => setLoading(false));
   }, [id]);
 
-  if(loading) return <h3>loading...</h3>
+  if(loading) return <Loading message="Loading product..."/>
 
   if(!product) return <h3>product not found</h3>
 
