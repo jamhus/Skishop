@@ -10,7 +10,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 interface Props {
   switchTheme: () => void;
@@ -72,7 +72,7 @@ const Header = ({ switchTheme }: Props) => {
         </List>
 
         <Box display="flex" alignItems="center">
-          <IconButton size="large" sx={navStyle}>
+          <IconButton component={Link} to="/basket" size="large" sx={navStyle}>
             <Badge badgeContent={4} color="secondary">
               <ShoppingCart></ShoppingCart>
             </Badge>
