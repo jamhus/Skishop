@@ -11,6 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
+import { useStoreContext } from "../context/StoreContext";
+import { BasketItem } from "../interfaces/Basket";
 
 interface Props {
   switchTheme: () => void;
@@ -39,6 +41,10 @@ const navStyle = {
   },
 };
 const Header = ({ switchTheme }: Props) => {
+  const { basket } = useStoreContext();
+
+  const itemsInBasket = basket?.items.reduce((sum,item)=>sum+item.quantity,0);
+
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
   return (
@@ -73,7 +79,7 @@ const Header = ({ switchTheme }: Props) => {
 
         <Box display="flex" alignItems="center">
           <IconButton component={Link} to="/basket" size="large" sx={navStyle}>
-            <Badge badgeContent={4} color="secondary">
+            <Badge badgeContent={itemsInBasket} color="secondary">
               <ShoppingCart></ShoppingCart>
             </Badge>
           </IconButton>

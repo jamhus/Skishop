@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import agent from "../../app/api/agent";
+import { useStoreContext } from "../../app/context/StoreContext";
 import { Product } from "../../app/interfaces/product";
 
 interface Props {
@@ -19,10 +20,12 @@ interface Props {
 }
 const ProductCard = ({ product }: Props) => {
   const [loading, setLoading] = useState(false);
+  const { setBasket } = useStoreContext();
 
   const handleAddItem = () => {
     setLoading(true);
     agent.Basket.addItem(product.id)
+      .then((basket) => setBasket(basket))
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
   };
