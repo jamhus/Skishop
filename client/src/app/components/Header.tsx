@@ -10,16 +10,14 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import { useStoreContext } from "../context/StoreContext";
 import { Link, NavLink } from "react-router-dom";
 import { Badge, List, ListItem, Switch } from "@mui/material";
 import { ShoppingCart } from "@mui/icons-material";
+import { useAppSelector } from "../store/configureStore";
 
 interface Props {
   switchTheme: () => void;
 }
-
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const midLinks = [
   { title: "Catalog", path: "/catalog" },
@@ -33,7 +31,7 @@ const rightLinks = [
 ];
 
 const Header = ({ switchTheme }: Props) => {
-  const { basket } = useStoreContext();
+  const { basket } = useAppSelector(state => state.basket);
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null

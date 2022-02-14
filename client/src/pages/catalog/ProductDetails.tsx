@@ -14,12 +14,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import agent from "../../app/api/agent";
 import Loading from "../../app/components/Loading";
-import { useStoreContext } from "../../app/context/StoreContext";
 import { Product } from "../../app/interfaces/product";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { currencyFormat } from "../../app/utils/utils";
+import { removeItem, setBasket } from "../basket/BasketSlice";
 
 const ProductDetails = () => {
-  const { basket, setBasket,removeItem } = useStoreContext();
+  const {basket} = useAppSelector(state => state.basket);
+  const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,13 +44,13 @@ const ProductDetails = () => {
     if (!item || quantity > item.quantity) {
       const updatedQuantity = item ? quantity - item.quantity : quantity;
       agent.Basket.addItem(productId, updatedQuantity)
-        .then((basket) => setBasket(basket))
+        .then((basket) => dispatch(setBasket(basket)))
         .catch((err) => console.log(err))
         .finally(() => setSubmitting(false));
     } else {
       const updatedQuantity = item.quantity - quantity;
       agent.Basket.removeItem(productId, updatedQuantity)
-      .then(() => removeItem(productId, updatedQuantity))
+      .then(() => dispatch(removeItem({productId, quantity :updatedQuantity})))
       .catch((err) => console.log(err))
       .finally(() => setSubmitting(false));
     }

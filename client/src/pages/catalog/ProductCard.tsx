@@ -12,21 +12,22 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import agent from "../../app/api/agent";
-import { useStoreContext } from "../../app/context/StoreContext";
 import { Product } from "../../app/interfaces/product";
+import { useAppDispatch } from "../../app/store/configureStore";
 import { currencyFormat } from "../../app/utils/utils";
+import { setBasket } from "../basket/BasketSlice";
 
 interface Props {
   product: Product;
 }
 const ProductCard = ({ product }: Props) => {
   const [loading, setLoading] = useState(false);
-  const { setBasket } = useStoreContext();
+  const dispatch = useAppDispatch();
 
   const handleAddItem = () => {
     setLoading(true);
     agent.Basket.addItem(product.id)
-      .then((basket) => setBasket(basket))
+      .then((basket) => dispatch(setBasket(basket)))
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
   };

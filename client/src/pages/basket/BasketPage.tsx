@@ -16,12 +16,14 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import agent from "../../app/api/agent";
-import { useStoreContext } from "../../app/context/StoreContext";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { currencyFormat } from "../../app/utils/utils";
+import { removeItem, setBasket } from "./BasketSlice";
 import BasketSummary from "./BasketSummary";
 
 const BasketPage = () => {
-  const { basket, setBasket, removeItem } = useStoreContext();
+  const {basket} = useAppSelector(state=>state.basket);
+  const dispatch = useAppDispatch();
   const [status, setStatus] = useState({
     loading: false,
     name: "",
@@ -33,7 +35,7 @@ const BasketPage = () => {
       name,
     });
     agent.Basket.addItem(productId)
-      .then((basket) => setBasket(basket))
+      .then((basket) => dispatch(setBasket(basket)))
       .catch((err) => console.log(err))
       .finally(() =>
         setStatus({
@@ -50,7 +52,9 @@ const BasketPage = () => {
     });
     agent.Basket.removeItem(productId, quantity)
       .then(() => {
-        removeItem(productId, quantity);
+        dispatch(removeItem({
+          productId, quantity
+        }));
       })
       .catch((err) => console.log(err))
       .finally(() =>
