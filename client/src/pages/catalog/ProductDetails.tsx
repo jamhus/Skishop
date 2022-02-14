@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import agent from "../../app/api/agent";
 import Loading from "../../app/components/Loading";
 import { Product } from "../../app/interfaces/product";
+import { currencyFormat } from "../../app/utils/utils";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ const ProductDetails = () => {
         </Typography>
         <Divider sx={{mb:2}}/>
         <Typography variant="h4" color="secondary">
-          {(product.price/100).toFixed(2)}$
+          {currencyFormat(product.price)}
         </Typography>
         <TableContainer>
           <Table>
