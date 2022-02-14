@@ -178,7 +178,7 @@ const BasketPage = () => {
         <Grid item xs={0} md={6} />
         <Grid item xs={12} md={6}>
           <BasketSummary />
-          <Button component={Link} to="/checkout" variant="contained" size="large" fullWidth>
+          <Button component={Link} to="/checkout" variant="contained" size="large" sx={{marginTop:"10px"}} fullWidth>
             Checkout
           </Button>
         </Grid>
