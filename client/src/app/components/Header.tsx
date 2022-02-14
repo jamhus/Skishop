@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
 import { useStoreContext } from "../context/StoreContext";
-import { BasketItem } from "../interfaces/Basket";
 
 interface Props {
   switchTheme: () => void;
