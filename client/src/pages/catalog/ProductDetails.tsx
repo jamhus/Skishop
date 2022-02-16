@@ -12,22 +12,23 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import agent from "../../app/api/agent";
 import Loading from "../../app/components/Loading";
-import { Product } from "../../app/interfaces/product";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { currencyFormat } from "../../app/utils/utils";
 import {
   addBasketItemAsync,
   removeBasketItemAsync,
 } from "../basket/BasketSlice";
+import { fetchProductAsync, productsSelectors } from "./catalogSlice";
 
 const ProductDetails = () => {
   const { basket, status } = useAppSelector((state) => state.basket);
+  const { status: productStatus } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const product = useAppSelector((state) =>
+    productsSelectors.selectById(state, id)
+  );
   const [quantity, setQuantity] = useState(0);
   const item = basket?.items.find((i) => i.productId === product?.id);
 
@@ -35,11 +36,8 @@ const ProductDetails = () => {
     if (item) {
       setQuantity(item.quantity);
     }
-
-    agent.Catalog.details(id)
-      .then((product) => setProduct(product))
-      .finally(() => setLoading(false));
-  }, [id, item]);
+    if (!product) dispatch(fetchProductAsync(parseInt(id)));
+  }, [dispatch, id, item, product]);
 
   const handleAddItem = (productId: number) => {
     if (!item || quantity > item.quantity) {
@@ -56,7 +54,8 @@ const ProductDetails = () => {
     setQuantity(value < 0 ? 0 : value);
   };
 
-  if (loading) return <Loading message="Loading product..." />;
+  if (productStatus.includes("pending"))
+    return <Loading message="Loading product..." />;
 
   if (!product) return <h3>product not found</h3>;
 
