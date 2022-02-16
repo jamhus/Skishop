@@ -12,22 +12,22 @@ const productsAdapter = createEntityAdapter<Product>();
 
 export const fetchProductsAsync = createAsyncThunk<Product[]>(
   "catalog/fetchProductsAsync",
-  async () => {
+  async (_, thunkApi) => {
     try {
       return await agent.Catalog.list();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      return thunkApi.rejectWithValue({ error: error.data });
     }
   }
 );
- 
-export const fetchProductAsync = createAsyncThunk<Product,number>(
+
+export const fetchProductAsync = createAsyncThunk<Product, number>(
   "catalog/fetchProductAsync",
-  async (id) => {
+  async (id, thunkApi) => {
     try {
       return await agent.Catalog.details(id.toString());
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      return thunkApi.rejectWithValue({ error: error.data });
     }
   }
 );
@@ -55,13 +55,12 @@ export const catalogSlice = createSlice({
       state.status = "pendingFetchProduct";
     });
     builder.addCase(fetchProductAsync.fulfilled, (state, action) => {
-      productsAdapter.upsertOne(state, action.payload)
+      productsAdapter.upsertOne(state, action.payload);
       state.status = "idle";
     });
     builder.addCase(fetchProductAsync.rejected, (state) => {
       state.status = "idle";
     });
-  
   },
 });
 

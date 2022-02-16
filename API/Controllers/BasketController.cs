@@ -38,7 +38,7 @@ namespace API.Controllers
 
             // get product
             var product = await _context.Products.FindAsync(productId);
-            if (product == null) return NotFound();
+            if (product == null) return BadRequest(new ProblemDetails {Title =  "Product not found" });
 
             // add item
             basket.AddItem(product, quantity);
@@ -59,7 +59,7 @@ namespace API.Controllers
             var basket = await RetrieveBasket();
 
             var product = await _context.Products.FindAsync(productId);
-            if (product == null) return NotFound();
+            if (product == null) return BadRequest(new ProblemDetails { Title = "Product not found" });
 
             // remove item or reduce quantity
             basket.removeItem(productId, quantity);
