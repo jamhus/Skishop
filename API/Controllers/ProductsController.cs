@@ -45,5 +45,15 @@ namespace API.Controllers
             if (product == null) return NotFound();
             return Ok(product);
         }
+
+        [HttpGet("filters")]
+
+        public async Task<IActionResult> GetFilters()
+        {
+            var brands = await _storeContext.Products.Select(p => p.Brand).Distinct().ToListAsync();
+            var types = await _storeContext.Products.Select(p => p.Type).Distinct().ToListAsync();
+
+            return Ok(new {brands,types});
+        }
     }
 }
