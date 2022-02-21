@@ -26,8 +26,8 @@ const getAxiosParams =(productParams: ProductParams) => {
   params.append("pageSize", productParams.pageSize.toString());
   params.append("orderBy", productParams.orderBy);
   if(productParams.searchTerm) params.append("searchTerm", productParams.searchTerm.toString());
-  if(productParams.brands) params.append("brands", productParams.brands.toString());
-  if(productParams.types) params.append("types", productParams.types.toString());
+  if(productParams.brands?.length > 1) params.append("brands", productParams.brands.toString());
+  if(productParams.types?.length > 1) params.append("types", productParams.types.toString());
 
   return params;
 }
@@ -72,6 +72,8 @@ const initParams = () => ({
   pageNumber: 1,
   pageSize: 6,
   orderBy: "name",
+  brands: [],
+  types: [],
 });
 
 export const catalogSlice = createSlice({
