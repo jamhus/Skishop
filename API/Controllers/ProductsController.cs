@@ -1,11 +1,13 @@
 ﻿using API.Data;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -22,18 +24,18 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts(
-            string orderBy,
-            string searchValue,
-            string brands,
-            string types)
+        public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
         {
             var query = _storeContext.Products
-                .Sort(orderBy)
-                .Search(searchValue)
-                .Filter(brands, types)
+                .Sort(productParams.OrderBy)
+                .Search(productParams.SearchTerm)
+                .Filter(productParams.Brands, productParams.Types)
                 .AsQueryable();
-            return await query.ToListAsync();
+
+            var porducts = await PagedList<Product>.ToBagedList(query, productParams.PageNumber, productParams.PageSize);
+
+            Response.Headers.Add("Pagination", JsonSerializer.Serialize(porducts.MetaData));
+            return porducts;
         }
 
         [HttpGet("{id}")] //api/products/3
@@ -41,8 +43,8 @@ namespace API.Controllers
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var product = await _storeContext.Products.FindAsync(id);
-            if (product == null)   return NotFound();   
-            return Ok(product); 
+            if (product == null) return NotFound();
+            return Ok(product);
         }
     }
 }
