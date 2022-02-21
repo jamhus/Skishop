@@ -1,10 +1,7 @@
 import {
   Grid,
-  Pagination,
   Paper,
-  Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
 import { useEffect } from "react";
 import CheckBoxGroup from "../../app/components/CheckBoxGroup";
 import Loading from "../../app/components/Loading";
