@@ -8,7 +8,6 @@ import {
   Paper,
   Radio,
   RadioGroup,
-  TextField,
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -21,6 +20,7 @@ import {
   productsSelectors,
 } from "./catalogSlice";
 import ProductsList from "./ProductList";
+import ProductSearch from "./ProductSearch";
 
 const sortOptions = [
   { value: "name", label: "Alphabetical" },
@@ -47,7 +47,7 @@ const Catalog = () => {
     <Grid container spacing={4} mt={5}>
       <Grid item xs={12} md={3}>
         <Paper sx={{ mb: 2 }}>
-          <TextField label="Search products" variant="outlined" fullWidth />
+          <ProductSearch />
         </Paper>
 
         <Paper sx={{ mb: 2, p: 2 }}>
@@ -98,13 +98,11 @@ const Catalog = () => {
       <Grid item xs={12} md={9}>
         <ProductsList products={products} />
       </Grid>
-      <Grid item xs={0} md={3}/>
-      
+      <Grid item xs={0} md={3} />
+
       <Grid item xs={12} md={9}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography>
-            Displaying 1-6 of 20 items
-          </Typography>
+          <Typography>Displaying 1-6 of 20 items</Typography>
           <Pagination color="primary" size="large" count={10} />
         </Box>
       </Grid>
