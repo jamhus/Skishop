@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect } from "react";
+import CheckBoxGroup from "../../app/components/CheckBoxGroup";
 import Loading from "../../app/components/Loading";
 import RadioButtonsGroup from "../../app/components/RadioButtonGroup";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
@@ -27,7 +28,7 @@ import ProductSearch from "./ProductSearch";
 const sortOptions = [
   { value: "name", label: "Alphabetical" },
   { value: "priceDesc", label: "Price - High to low" },
-  { value: "price", label: "PRice - low to high" },
+  { value: "price", label: "Price - low to high" },
 ];
 const Catalog = () => {
   const products = useAppSelector(productsSelectors.selectAll);
@@ -69,31 +70,23 @@ const Catalog = () => {
         </Paper>
 
         <Paper sx={{ mb: 2, p: 2 }}>
-          <FormGroup>
-            {brands.map((brand) => {
-              return (
-                <FormControlLabel
-                  control={<Checkbox />}
-                  label={brand}
-                  key={brand}
-                />
-              );
-            })}
-          </FormGroup>
+        <CheckBoxGroup
+            options={brands}
+            checked={productParams.brands}
+            onChange={(brands: string[]) =>
+              dispatch(setProductParams({ brands }))
+            }
+          />
         </Paper>
 
         <Paper sx={{ mb: 2, p: 2 }}>
-          <FormGroup>
-            {types.map((type) => {
-              return (
-                <FormControlLabel
-                  control={<Checkbox />}
-                  label={type}
-                  key={type}
-                />
-              );
-            })}
-          </FormGroup>
+          <CheckBoxGroup
+            options={types}
+            checked={productParams.types}
+            onChange={(types: string[]) =>
+              dispatch(setProductParams({ types }))
+            }
+          />
         </Paper>
       </Grid>
       <Grid item xs={12} md={9}>
