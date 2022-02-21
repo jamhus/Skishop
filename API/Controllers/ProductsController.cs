@@ -33,8 +33,7 @@ namespace API.Controllers
                 .AsQueryable();
 
             var porducts = await PagedList<Product>.ToBagedList(query, productParams.PageNumber, productParams.PageSize);
-
-            Response.Headers.Add("Pagination", JsonSerializer.Serialize(porducts.MetaData));
+            Response.AddPaginationHeader(porducts.MetaData);
             return porducts;
         }
 
