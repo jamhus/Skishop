@@ -19,6 +19,7 @@ const requests = {
 
 const Catalog = {
     list :()=> requests.get("products"),
+    filters :()=> requests.get("products/filters"),
     details :(id:string)=> requests.get(`products/${id}`),
 }
 
