@@ -1,3 +1,4 @@
+import { MetaData } from './../../app/interfaces/Pagination';
 import {
   createAsyncThunk,
   createEntityAdapter,
@@ -14,6 +15,7 @@ interface CatalogState {
   brands: string[];
   types: string[];
   productParams: ProductParams;
+  metaData: MetaData | null;
 }
 // stores all the product keys in array of ids[] and and product objects in entites object
 const productsAdapter = createEntityAdapter<Product>();
@@ -35,12 +37,15 @@ export const fetchProductsAsync = createAsyncThunk<Product[], void, {state: Root
   async (_, thunkApi) => {
     const params = getAxiosParams(thunkApi.getState().catalog.productParams)
     try {
-      return await agent.Catalog.list(params);
+      const response =  await agent.Catalog.list(params);
+      thunkApi.dispatch(setMetaData(response.metaData));
+      return response.items;
     } catch (error: any) {
       return thunkApi.rejectWithValue({ error: error.data });
     }
   }
 );
+
 export const fetchFiltersAsync = createAsyncThunk<any>(
   "catalog/fetchFiltersAsync",
   async (_, thunkApi) => {
@@ -78,11 +83,15 @@ export const catalogSlice = createSlice({
     brands: [],
     types: [],
     productParams: initParams(),
+    metaData: null
   }),
   reducers: {
     setProductParams: (state, action) => {
       state.productsLoaded = false; // triggers view to refetch
       state.productParams = { ...state.productParams, ...action.payload };
+    },
+    setMetaData: (state,action) => {
+      state.metaData = action.payload;
     },
     resetProductParams: (state) => {
       state.productParams = initParams();
@@ -129,4 +138,4 @@ export const productsSelectors = productsAdapter.getSelectors(
   (state: RootState) => state.catalog
 );
 
-export const { setProductParams, resetProductParams } = catalogSlice.actions;
+export const { setProductParams, resetProductParams,setMetaData } = catalogSlice.actions;
