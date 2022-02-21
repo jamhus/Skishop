@@ -13,11 +13,13 @@ import {
 import { Box } from "@mui/system";
 import { useEffect } from "react";
 import Loading from "../../app/components/Loading";
+import RadioButtonsGroup from "../../app/components/RadioButtonGroup";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import {
   fetchFiltersAsync,
   fetchProductsAsync,
   productsSelectors,
+  setProductParams,
 } from "./catalogSlice";
 import ProductsList from "./ProductList";
 import ProductSearch from "./ProductSearch";
@@ -29,8 +31,14 @@ const sortOptions = [
 ];
 const Catalog = () => {
   const products = useAppSelector(productsSelectors.selectAll);
-  const { productsLoaded, status, filtersLoaded, brands, types } =
-    useAppSelector((state) => state.catalog);
+  const {
+    productsLoaded,
+    status,
+    filtersLoaded,
+    brands,
+    types,
+    productParams,
+  } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -51,20 +59,13 @@ const Catalog = () => {
         </Paper>
 
         <Paper sx={{ mb: 2, p: 2 }}>
-          <FormControl component="fieldset">
-            <RadioGroup>
-              {sortOptions.map((option) => {
-                return (
-                  <FormControlLabel
-                    value={option.value}
-                    control={<Radio />}
-                    label={option.label}
-                    key={option.value}
-                  />
-                );
-              })}
-            </RadioGroup>
-          </FormControl>
+          <RadioButtonsGroup
+            selectedValue={productParams.orderBy}
+            options={sortOptions}
+            onChange={(e) =>
+              dispatch(setProductParams({ orderBy: e.target.value }))
+            }
+          />
         </Paper>
 
         <Paper sx={{ mb: 2, p: 2 }}>
