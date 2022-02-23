@@ -129,6 +129,7 @@ const Header = ({ switchTheme }: Props) => {
               ))}
             </Menu>
           </Box>
+
           {/* logo and toggle on little screen */}
 
           <Box
@@ -146,6 +147,7 @@ const Header = ({ switchTheme }: Props) => {
             </Typography>
             <Switch {...label} onChange={switchTheme} />
           </Box>
+
           {/* menu on big screen */}
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
@@ -175,11 +177,27 @@ const Header = ({ switchTheme }: Props) => {
                 <ShoppingCart></ShoppingCart>
               </Badge>
             </IconButton>
+
             <Tooltip title="">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0,display: { xs: 'block', md: 'none' } }}>
                 <Avatar sx={{marginLeft:"10px"}} alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
+        
+            {/* login and register for Big displays */}
+            <List sx={{ display: { xs: 'none', md: 'flex' } }}>
+            {rightLinks.map(({ title, path }) => (
+                <ListItem
+                  component={NavLink}
+                  to={path}
+                  key={path}
+                  sx={navStyle}
+                >
+                  {title.toUpperCase()}
+                </ListItem>
+              ))}
+            </List>
+
             {/* login and register for small displays */}
             <Menu
               sx={{ mt: "45px" }}
