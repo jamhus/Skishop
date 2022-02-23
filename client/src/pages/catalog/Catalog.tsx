@@ -1,7 +1,4 @@
-import {
-  Grid,
-  Paper,
-} from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import { useEffect } from "react";
 import CheckBoxGroup from "../../app/components/CheckBoxGroup";
 import Loading from "../../app/components/Loading";
@@ -26,12 +23,11 @@ const Catalog = () => {
   const products = useAppSelector(productsSelectors.selectAll);
   const {
     productsLoaded,
-    status,
     filtersLoaded,
     brands,
     types,
     productParams,
-    metaData
+    metaData,
   } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
 
@@ -43,7 +39,7 @@ const Catalog = () => {
     if (!productsLoaded) dispatch(fetchProductsAsync());
   }, [productsLoaded, dispatch]);
 
-  if (status.includes("pending") || !metaData)
+  if (!filtersLoaded)
     return <Loading message="Loading products..." />;
   return (
     <Grid container columnSpacing={4} mt={5}>
@@ -63,11 +59,11 @@ const Catalog = () => {
         </Paper>
 
         <Paper sx={{ mb: 2, p: 2 }}>
-        <CheckBoxGroup
+          <CheckBoxGroup
             options={brands}
             checked={productParams.brands}
             onChange={(brands: string[]) =>
-              dispatch(setProductParams({ brands ,pageNumber: 1}))
+              dispatch(setProductParams({ brands, pageNumber: 1 }))
             }
           />
         </Paper>
@@ -77,7 +73,7 @@ const Catalog = () => {
             options={types}
             checked={productParams.types}
             onChange={(types: string[]) =>
-              dispatch(setProductParams({ types ,pageNumber: 1}))
+              dispatch(setProductParams({ types, pageNumber: 1 }))
             }
           />
         </Paper>
@@ -86,11 +82,16 @@ const Catalog = () => {
         <ProductsList products={products} />
       </Grid>
       <Grid item xs={0} md={3} />
-
-      <Grid item xs={12} md={9}>
-        <PaginationBar metaData={metaData} 
-        onChange={(page:number)=> dispatch(setProductParams({pageNumber: page}))}/>
-      </Grid>
+      {metaData && (
+        <Grid item xs={12} md={9}>
+          <PaginationBar
+            metaData={metaData}
+            onChange={(page: number) =>
+              dispatch(setProductParams({ pageNumber: page }))
+            }
+          />
+        </Grid>
+      )}
     </Grid>
   );
 };
