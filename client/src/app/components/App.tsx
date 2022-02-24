@@ -1,7 +1,7 @@
 import { Container, CssBaseline } from "@mui/material";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import AboutPage from "../../pages/about/AboutPage";
@@ -15,31 +15,30 @@ import "react-toastify/dist/ReactToastify.css";
 import ServerError from "../errors/ServerErrors";
 import NotFound from "../errors/NotFound";
 import BasketPage from "../../pages/basket/BasketPage";
-import { getCookie } from "../utils/utils";
-import agent from "../api/agent";
 import Loading from "./Loading";
 import CheckoutPage from "../../pages/checkout/Checkout";
 import { useAppDispatch } from "../store/configureStore";
-import { setBasket } from "../../pages/basket/BasketSlice";
+import { fetchBasketAsync } from "../../pages/basket/BasketSlice";
 import Login from "../../pages/account/Login";
 import Register from "../../pages/account/Register";
+import { fetchCurrentUser } from "../../pages/account/accountSlice";
 
 const App = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const buyerId = getCookie("buyerId");
-    if (buyerId) {
-      agent.Basket.get()
-        .then((basket) => dispatch(setBasket(basket)))
-        .catch((err) => console.log(err))
-        .finally(() => setLoading(false));
-    }
-    else {
-      setLoading(false)
+  const initApp = useCallback(async () => {
+    try {
+      await dispatch(fetchCurrentUser());
+      await dispatch(fetchBasketAsync());
+    } catch (error) {
+      console.log(error);
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    initApp().then(() => setLoading(false));
+  }, [initApp]);
 
   const [darkMode, setDarkMode] = useState(false);
   const paletteType = darkMode ? "dark" : "light";
@@ -56,7 +55,7 @@ const App = () => {
     setDarkMode(!darkMode);
   };
 
-  if(loading) return <Loading message="Initalizing app..."/>
+  if (loading) return <Loading message="Initalizing app..." />;
 
   return (
     <ThemeProvider theme={theme}>

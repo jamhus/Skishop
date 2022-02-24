@@ -1,3 +1,4 @@
+import { store } from './../store/configureStore';
 import { PaginatedResponse } from './../interfaces/Pagination';
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
@@ -52,6 +53,12 @@ const agent = {
   Account,
   TestErrors,
 };
+
+axios.interceptors.request.use((config:any) => {
+  const token = store.getState().account.user?.token;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+})
 
 axios.interceptors.response.use(
   async (response) => {
