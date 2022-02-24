@@ -19,19 +19,26 @@ interface Props {
   switchTheme: () => void;
 }
 
-const midLinks = [
-  { title: "Catalog", path: "/catalog" },
-  { title: "About", path: "/about" },
-  { title: "Contact", path: "/contact" },
-];
-
-const rightLinks = [
-  { title: "Login", path: "/login" },
-  { title: "Register", path: "/Register" },
-];
-
 const Header = ({ switchTheme }: Props) => {
-  const { basket } = useAppSelector(state => state.basket);
+  const { basket } = useAppSelector((state) => state.basket);
+  const { user } = useAppSelector((state) => state.account);
+
+  let midLinks = [
+    { title: "About", path: "/about" },
+    { title: "Contact", path: "/contact" },
+  ];
+
+  if (user) midLinks = [{ title: "Catalog", path: "/catalog" }, ...midLinks];
+  
+  const rightLinks = !user
+    ? [
+        { title: "Login", path: "/login" },
+        { title: "Register", path: "/Register" },
+      ]
+    : [
+        { title: "Orders", path: "/orders" },
+        { title: "Logout", path: "/logout" },
+      ];
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -73,7 +80,7 @@ const Header = ({ switchTheme }: Props) => {
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
   return (
-    <AppBar position="static"  sx={{ mb: 4 }}>
+    <AppBar position="static" sx={{ mb: 4 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* logo and toggle on big screen */}
@@ -167,38 +174,61 @@ const Header = ({ switchTheme }: Props) => {
 
           {/* right side */}
           <Box display="flex" alignItems="center">
-            <IconButton
-              component={Link}
-              to="/basket"
-              size="large"
-              sx={navStyle}
-            >
-              <Badge badgeContent={itemsInBasket} color="secondary">
-                <ShoppingCart></ShoppingCart>
-              </Badge>
-            </IconButton>
+            {user && (
+              <IconButton
+                component={Link}
+                to="/basket"
+                size="large"
+                sx={navStyle}
+              >
+                <Badge badgeContent={itemsInBasket} color="secondary">
+                  <ShoppingCart></ShoppingCart>
+                </Badge>
+              </IconButton>
+            )}
 
             <Tooltip title="">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0,display: { xs: 'block', md: 'none' } }}>
-                <Avatar sx={{marginLeft:"10px"}} alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              <IconButton
+                onClick={handleOpenUserMenu}
+                color="inherit"
+                sx={{
+                  p: 0,
+                }}
+              >
+                {!user ? (
+                  <MenuIcon
+                    sx={{
+                      display: { xs: "block", md: "none" },
+                    }}
+                  />
+                ) : (
+                  <Avatar
+                    sx={{ marginLeft: "10px" }}
+                    alt={user.email}
+                    src="/static/images/avatar/2.jpg"
+                  />
+                )}
               </IconButton>
             </Tooltip>
-        
-            {/* login and register for Big displays */}
-            <List sx={{ display: { xs: 'none', md: 'flex' } }}>
-            {rightLinks.map(({ title, path }) => (
-                <ListItem
-                  component={NavLink}
-                  to={path}
-                  key={path}
-                  sx={navStyle}
-                >
-                  {title.toUpperCase()}
-                </ListItem>
-              ))}
-            </List>
 
+            {/* login and register for Big displays */}
+
+            {!user && (
+              <List sx={{ display: { xs: "none", md: "flex" } }}>
+                {rightLinks.map(({ title, path }) => (
+                  <ListItem
+                    component={NavLink}
+                    to={path}
+                    key={path}
+                    sx={navStyle}
+                  >
+                    {title.toUpperCase()}
+                  </ListItem>
+                ))}
+              </List>
+            )}
             {/* login and register for small displays */}
+
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
