@@ -61,7 +61,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       <CssBaseline />
-      <Header switchTheme={switchTheme} />
+      <Header darkMode={darkMode} handleThemeChange={switchTheme} />
       <Container>
         <Switch>
           <Route path="/" exact component={HomePage} />

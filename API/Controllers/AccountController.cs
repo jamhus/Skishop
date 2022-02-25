@@ -1,12 +1,14 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -46,10 +48,12 @@ namespace API.Controllers
                 await _context.SaveChangesAsync();
             }
 
+
+
             return new UserDto {
                 Email = user.Email,
                 Token = await _tokenService.GenerateToken(user),
-                Basket = (BasketDto)(anonBasket != null ? anonBasket.MapBasketToDto() : userbasket.MapBasketToDto()),
+                Basket = anonBasket != null ? anonBasket.MapBasketToDto() : userbasket?.MapBasketToDto()
             };
         }
 
@@ -81,10 +85,13 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var userbasket = await RetrieveBasket(user.UserName);
+
             return new UserDto
             {
                 Email = user.Email,
                 Token = await _tokenService.GenerateToken(user),
+                Basket = userbasket?.MapBasketToDto()
             };
         }
 

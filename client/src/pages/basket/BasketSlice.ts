@@ -93,7 +93,6 @@ export const basketSlice = createSlice({
       state.status = "idle";
     });
     builder.addCase(removeBasketItemAsync.rejected, (state, action) => {
-      console.log(action);
       state.status = "idle";
     });
     builder.addMatcher(

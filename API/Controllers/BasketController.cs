@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -96,11 +97,7 @@ namespace API.Controllers
             if (string.IsNullOrEmpty(buyerId))
             {
                 buyerId = Guid.NewGuid().ToString();
-                var cookieOptions = new CookieOptions
-                {
-                    IsEssential = true,
-                    Expires = DateTime.Now.AddDays(1)
-                };
+                var cookieOptions = new CookieOptions { IsEssential = true, Expires = DateTime.Now.AddDays(1)};
                 Response.Cookies.Append("buyerId", buyerId, cookieOptions);
             }
        
