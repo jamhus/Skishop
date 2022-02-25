@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace API.Entities
@@ -29,6 +30,11 @@ namespace API.Entities
             if (item == null) return;
             item.Quantity -= quantity;
             if (item.Quantity == 0) Items.Remove(item);
+        }
+
+        internal object MapBasketToDto()
+        {
+            throw new NotImplementedException();
         }
     }
 }
