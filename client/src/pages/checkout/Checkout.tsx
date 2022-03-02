@@ -7,7 +7,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import AddressForm from "./AddressForm";
 import PaymentForm from "./PaymentForm";
@@ -35,15 +35,28 @@ const getStepContent = (step: number) => {
 };
 
 const CheckoutPage = () => {
+  const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [orderNumber, setOrderNumber] = useState(0);
+
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(false);
+
   const currentSchema = validationSchema[activeStep];
+
   const methods = useForm({
     mode: "all",
     resolver: yupResolver(currentSchema),
   });
+
+  useEffect(()=>{
+    agent.Account.fetchAddress()
+      .then(response => {
+        if (response) {
+          methods.reset({...methods.getValues(),...response,saveAddress: false});
+        }
+      })
+  },[methods])
+
   const handleNext = async (data: FieldValues) => {
     const { nameOnCard, saveAddress, ...shippingAddress } = data;
     if (activeStep === steps.length - 1) {
