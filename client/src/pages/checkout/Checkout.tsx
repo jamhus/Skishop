@@ -31,16 +31,14 @@ const getStepContent = (step: number) => {
 };
 
 const CheckoutPage = () => {
+
+  const [activeStep, setActiveStep] = useState(0);
+  const currentSchema = validationSchema[activeStep];
   const methods = useForm({
     mode: "all",
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(currentSchema),
   });
-  const [activeStep, setActiveStep] = useState(0);
-
   const handleNext = (data: FieldValues) => {
-    if (activeStep === 0) {
-      console.log(data);
-    }
     setActiveStep(activeStep + 1);
   };
 
