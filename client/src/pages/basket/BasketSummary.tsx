@@ -9,9 +9,13 @@ import {
 import { useAppSelector } from "../../app/store/configureStore";
 import { currencyFormat } from "../../app/utils/utils";
 
-const BasketSummary = () => {
+interface Props {
+  orderSubTotal? : number
+}
+
+const BasketSummary = ({orderSubTotal}: Props) => {
   const {basket} = useAppSelector(store => store.basket);
-  const subTotal =
+  const subTotal = orderSubTotal? orderSubTotal :
     basket?.items.reduce((sum, item) => sum + item.price * item.quantity, 0) ||
     0;
   const deliveryFee = subTotal > 10000 ? 0 : 500;
