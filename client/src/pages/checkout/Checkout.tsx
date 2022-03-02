@@ -14,6 +14,10 @@ import PaymentForm from "./PaymentForm";
 import Review from "./ReviewPage";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./checkoutValidation";
+import agent from "../../app/api/agent";
+import { useAppDispatch } from "../../app/store/configureStore";
+import { clearBasket } from "../basket/BasketSlice";
+import { LoadingButton } from "@mui/lab";
 
 const steps = ["Shipping address", "Review your order", "Payment details"];
 
@@ -31,15 +35,33 @@ const getStepContent = (step: number) => {
 };
 
 const CheckoutPage = () => {
-
   const [activeStep, setActiveStep] = useState(0);
+  const [orderNumber, setOrderNumber] = useState(0);
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
   const currentSchema = validationSchema[activeStep];
   const methods = useForm({
     mode: "all",
     resolver: yupResolver(currentSchema),
   });
-  const handleNext = (data: FieldValues) => {
-    setActiveStep(activeStep + 1);
+  const handleNext = async (data: FieldValues) => {
+    const { nameOnCard, saveAddress, ...shippingAddress } = data;
+    if (activeStep === steps.length - 1) {
+      setLoading(true);
+      try {
+        const orderNumber = await agent.Orders.create({
+          saveAddress,
+          shippingAddress,
+        });
+        setOrderNumber(orderNumber);
+        setActiveStep(activeStep + 1);
+        dispatch(clearBasket());
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    } else setActiveStep(activeStep + 1);
   };
 
   const handleBack = () => {
@@ -69,7 +91,7 @@ const CheckoutPage = () => {
                 Thank you for your order.
               </Typography>
               <Typography variant="subtitle1">
-                Your order number is #2001539. We have emailed your order
+                Your order number is #{orderNumber}. We have emailed your order
                 confirmation, and will send you an update when your order has
                 shipped.
               </Typography>
@@ -83,14 +105,15 @@ const CheckoutPage = () => {
                     Back
                   </Button>
                 )}
-                <Button
+                <LoadingButton
+                  loading={loading}
                   disabled={!methods.formState.isValid}
                   variant="contained"
                   type="submit"
                   sx={{ mt: 3, ml: 1 }}
                 >
                   {activeStep === steps.length - 1 ? "Place order" : "Next"}
-                </Button>
+                </LoadingButton>
               </Box>
             </form>
           )}
