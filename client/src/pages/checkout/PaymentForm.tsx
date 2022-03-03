@@ -91,12 +91,6 @@ const PaymentForm = ({cardState,onCardInputChange}:Props) => {
             }}
           />
         </Grid>
-        <Grid item xs={12}>
-          <AppCheckBox
-            name="saveCard"
-            label="Remember credit card details for next time"
-          />
-        </Grid>
       </Grid>
     </>
   );
