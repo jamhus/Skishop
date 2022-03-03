@@ -10,27 +10,17 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import { StripeInput } from "./StripeInput";
-import { useState } from "react";
+import { StripeElementType } from "@stripe/stripe-js";
 
-const PaymentForm = () => {
+interface Props {
+  cardState: {elementError: {
+    [key in StripeElementType] ?: string
+  }},
+  onCardInputChange: (event: any) => void
+}
+const PaymentForm = ({cardState,onCardInputChange}:Props) => {
   const { control } = useFormContext();
-  const [cardState, setCardState] = useState<any>({ elementError: {} });
-  const [cardComplete, setCardComplete] = useState<any>({
-    cardNumber: false,
-    cardExpiry: false,
-    cardCvc: false,
-  });
-
-  function onCardInputChange(event: any) {
-    setCardState({
-      ...cardState,
-      elementError: {
-        ...cardState.elementError,
-        [event.elementType]: event.error?.message,
-      },
-    });
-    setCardComplete({ ...cardComplete, [event.elementType]: event.complete });
-  }
+ 
   return (
     <>
       <Typography variant="h6" gutterBottom>

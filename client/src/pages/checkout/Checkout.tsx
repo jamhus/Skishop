@@ -21,18 +21,7 @@ import { LoadingButton } from "@mui/lab";
 
 const steps = ["Shipping address", "Review your order", "Payment details"];
 
-const getStepContent = (step: number) => {
-  switch (step) {
-    case 0:
-      return <AddressForm />;
-    case 1:
-      return <Review />;
-    case 2:
-      return <PaymentForm />;
-    default:
-      throw new Error("Unknown step");
-  }
-};
+
 
 const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
@@ -40,6 +29,37 @@ const CheckoutPage = () => {
   const [orderNumber, setOrderNumber] = useState(0);
 
   const dispatch = useAppDispatch();
+
+  const [cardState, setCardState] = useState<any>({ elementError: {} });
+  const [cardComplete, setCardComplete] = useState<any>({
+    cardNumber: false,
+    cardExpiry: false,
+    cardCvc: false,
+  });
+
+  function onCardInputChange(event: any) {
+    setCardState({
+      ...cardState,
+      elementError: {
+        ...cardState.elementError,
+        [event.elementType]: event.error?.message,
+      },
+    });
+    setCardComplete({ ...cardComplete, [event.elementType]: event.complete });
+  }
+
+  const getStepContent = (step: number) => {
+    switch (step) {
+      case 0:
+        return <AddressForm />;
+      case 1:
+        return <Review />;
+      case 2:
+        return <PaymentForm cardState={cardState} onCardInputChange={onCardInputChange}/>;
+      default:
+        throw new Error("Unknown step");
+    }
+  };
 
   const currentSchema = validationSchema[activeStep];
 
@@ -81,6 +101,16 @@ const CheckoutPage = () => {
     setActiveStep(activeStep - 1);
   };
 
+  const submitDisabled =()=> {
+    if (activeStep === steps.length -1) {
+      return !cardComplete.cardCvc 
+      || !cardComplete.cardExpiry 
+      || !cardComplete.cardNumber
+      || !methods.formState.isValid
+    }
+    else return !methods.formState.isValid
+  }
+
   return (
     <FormProvider {...methods}>
       <Paper
@@ -120,7 +150,7 @@ const CheckoutPage = () => {
                 )}
                 <LoadingButton
                   loading={loading}
-                  disabled={!methods.formState.isValid}
+                  disabled={submitDisabled()}
                   variant="contained"
                   type="submit"
                   sx={{ mt: 3, ml: 1 }}
