@@ -2,7 +2,6 @@
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace API.Services
@@ -14,16 +13,16 @@ namespace API.Services
 
         public ImageService(IConfiguration config)
         {
+            _config = config;
             var acc = new Account(
                  _config["CloudinarySettings:CloudName"],
                  _config["CloudinarySettings:ApiKey"],
                  _config["CloudinarySettings:ApiSecret"]
             );
 
-            _cloudinary = new Cloudinary(acc);
-            _config = config;
+            _cloudinary = new Cloudinary(acc);  
         }
-        public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
+        public async Task<ImageUploadResult> AddImageAsync(IFormFile file)
         {
             var uploadResult = new ImageUploadResult();
             if (file.Length > 0)
@@ -38,7 +37,7 @@ namespace API.Services
             return uploadResult;
         }
 
-        public async Task<DeletionResult> DeletePhotoAsync(string publicId)
+        public async Task<DeletionResult> DeleteImageAsync(string publicId)
         {
             var deleteParams = new DeletionParams(publicId);
             var result = await _cloudinary.DestroyAsync(deleteParams);
