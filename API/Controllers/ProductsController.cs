@@ -1,7 +1,10 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +20,12 @@ namespace API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly StoreContext _storeContext;
+        private readonly IMapper _mapper;
 
-        public ProductsController(StoreContext storeContext)
+        public ProductsController(StoreContext storeContext, IMapper mapper)
         {
             _storeContext = storeContext;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -37,7 +42,7 @@ namespace API.Controllers
             return porducts;
         }
 
-        [HttpGet("{id}")] //api/products/3
+        [HttpGet("{id}", Name = "GetProduct")] //api/products/3
 
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
@@ -53,7 +58,59 @@ namespace API.Controllers
             var brands = await _storeContext.Products.Select(p => p.Brand).Distinct().ToListAsync();
             var types = await _storeContext.Products.Select(p => p.Type).Distinct().ToListAsync();
 
-            return Ok(new {brands,types});
+            return Ok(new { brands, types });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<ActionResult<Product>> CreateProduct(CreateProductDto productDto)
+        {
+            var product = _mapper.Map<Product>(productDto);
+
+            _storeContext.Products.Add(product);
+
+            var result = await _storeContext.SaveChangesAsync() > 0;
+
+            if (result) return CreatedAtRoute("GetProduct", new { Id = product.Id }, product);
+
+            return BadRequest(new ProblemDetails { Title = "Problem creating new product" });
+        }  
+        
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        public async Task<ActionResult> UpdateProduct(UpdateProductDto productDto)
+        {
+            var product = await _storeContext.Products.FindAsync(productDto.Id);
+
+            if (product == null) return NotFound();
+
+            // EF is tracking the product and is aware about the changes 
+            _mapper.Map(productDto, product);
+
+            var result = await _storeContext.SaveChangesAsync() > 0;
+
+            if (result) return NoContent();
+
+            return BadRequest(new ProblemDetails { Title = "Problems updating product"});
+    
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProduct(int id)
+        {
+            var product = await _storeContext.Products.FindAsync(id);
+
+            if (product == null) return NotFound();
+
+            _storeContext.Remove(product);
+
+            var result = await _storeContext.SaveChangesAsync() > 0;
+
+            if (result) return NoContent();
+
+            return BadRequest(new ProblemDetails { Title = "Problems deleting product" });
+
         }
     }
 }
