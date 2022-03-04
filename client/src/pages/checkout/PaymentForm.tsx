@@ -3,7 +3,6 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { useFormContext } from "react-hook-form";
 import AppTextInput from "../../app/components/AppTextInput";
-import AppCheckBox from "../../app/components/AppCheckBox";
 import {
   CardCvcElement,
   CardExpiryElement,
