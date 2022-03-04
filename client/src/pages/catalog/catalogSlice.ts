@@ -1,4 +1,4 @@
-import { MetaData } from './../../app/interfaces/Pagination';
+import { MetaData } from "./../../app/interfaces/Pagination";
 import {
   createAsyncThunk,
   createEntityAdapter,
@@ -20,31 +20,35 @@ interface CatalogState {
 // stores all the product keys in array of ids[] and and product objects in entites object
 const productsAdapter = createEntityAdapter<Product>();
 
-const getAxiosParams =(productParams: ProductParams) => {
+const getAxiosParams = (productParams: ProductParams) => {
   const params = new URLSearchParams();
   params.append("pageNumber", productParams.pageNumber.toString());
   params.append("pageSize", productParams.pageSize.toString());
   params.append("orderBy", productParams.orderBy);
-  if(productParams.searchTerm) params.append("searchTerm", productParams.searchTerm.toString());
-  if(productParams.brands) params.append("brands", productParams.brands.toString());
-  if(productParams.types) params.append("types", productParams.types.toString());
+  if (productParams.searchTerm)
+    params.append("searchTerm", productParams.searchTerm.toString());
+  if (productParams.brands)
+    params.append("brands", productParams.brands.toString());
+  if (productParams.types)
+    params.append("types", productParams.types.toString());
 
   return params;
-}
+};
 
-export const fetchProductsAsync = createAsyncThunk<Product[], void, {state: RootState}>(
-  "catalog/fetchProductsAsync",
-  async (_, thunkApi) => {
-    const params = getAxiosParams(thunkApi.getState().catalog.productParams)
-    try {
-      const response =  await agent.Catalog.list(params);
-      thunkApi.dispatch(setMetaData(response.metaData));
-      return response.items;
-    } catch (error: any) {
-      return thunkApi.rejectWithValue({ error: error.data });
-    }
+export const fetchProductsAsync = createAsyncThunk<
+  Product[],
+  void,
+  { state: RootState }
+>("catalog/fetchProductsAsync", async (_, thunkApi) => {
+  const params = getAxiosParams(thunkApi.getState().catalog.productParams);
+  try {
+    const response = await agent.Catalog.list(params);
+    thunkApi.dispatch(setMetaData(response.metaData));
+    return response.items;
+  } catch (error: any) {
+    return thunkApi.rejectWithValue({ error: error.data });
   }
-);
+});
 
 export const fetchFiltersAsync = createAsyncThunk<any>(
   "catalog/fetchFiltersAsync",
@@ -85,18 +89,30 @@ export const catalogSlice = createSlice({
     brands: [],
     types: [],
     productParams: initParams(),
-    metaData: null
+    metaData: null,
   }),
   reducers: {
     setProductParams: (state, action) => {
       state.productsLoaded = false; // triggers view to refetch
       state.productParams = { ...state.productParams, ...action.payload };
     },
-    setMetaData: (state,action) => {
+    setMetaData: (state, action) => {
       state.metaData = action.payload;
     },
     resetProductParams: (state) => {
       state.productParams = initParams();
+    },
+    setPageNumber: (state, action) => {
+      state.productsLoaded = false;
+      state.productParams = { ...state.productParams, ...action.payload };
+    },
+    setProduct: (state, action) => {
+      productsAdapter.upsertOne(state, action.payload);
+      state.productsLoaded = false;
+    },
+    removeProduct: (state, action) => {
+      productsAdapter.removeOne(state, action.payload);
+      state.productsLoaded = false;
     },
   },
   extraReducers: (builder) => {
@@ -140,4 +156,4 @@ export const productsSelectors = productsAdapter.getSelectors(
   (state: RootState) => state.catalog
 );
 
-export const { setProductParams, resetProductParams,setMetaData } = catalogSlice.actions;
+export const {setProductParams, resetProductParams, setMetaData, setPageNumber, setProduct, removeProduct} = catalogSlice.actions;
