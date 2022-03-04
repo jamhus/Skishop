@@ -64,22 +64,28 @@ const App = () => {
       <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       <CssBaseline />
       <Header darkMode={darkMode} handleThemeChange={switchTheme} />
-      <Container>
-        <Switch>
-          <Route path="/" exact component={HomePage} />
-          <Route exact path="/catalog" component={Catalog} />
-          <Route path="/catalog/:id" component={ProductDetails} />
-          <Route path="/about" component={AboutPage} />
-          <Route path="/contact" component={ContactPage} />
-          <Route path="/server-error" component={ServerError} />
-          <Route path="/basket" component={BasketPage} />
-          <PrivateRoute path="/checkout" component={CheckoutWrapper} />
-          <PrivateRoute path="/orders" component={Orders} />
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
-          <Route component={NotFound} />
-        </Switch>
-      </Container>
+      <Route path="/" exact component={HomePage} />
+
+      <Route
+        path={"/(.+)"}
+        render={() => (
+          <Container sx={{marginTop:5}}>
+            <Switch>
+              <Route exact path="/catalog" component={Catalog} />
+              <Route path="/catalog/:id" component={ProductDetails} />
+              <Route path="/about" component={AboutPage} />
+              <Route path="/contact" component={ContactPage} />
+              <Route path="/server-error" component={ServerError} />
+              <Route path="/basket" component={BasketPage} />
+              <PrivateRoute path="/checkout" component={CheckoutWrapper} />
+              <PrivateRoute path="/orders" component={Orders} />
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+              <Route component={NotFound} />
+            </Switch>
+          </Container>
+        )}
+      />
     </ThemeProvider>
   );
 };
